@@ -1,0 +1,92 @@
+name: InvenIQ Continuous Integration
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  backend-lint-test:
+    name: Backend Lint, Type Check & Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Lint and format check (Ruff & Black)
+        run: |
+          ruff check .
+          black --check .
+
+      - name: Type checking (Mypy)
+        run: |
+          mypy services/core services/api services/ml services/optimizer pipelines --ignore-missing-imports
+
+      - name: Run Pytest test suite
+        run: |
+          pytest tests/unit/ -v --tb=short
+
+      - name: Run Optimizer Invariant Property Tests (Hypothesis)
+        run: |
+          pytest tests/property/ -v --tb=short
+
+  frontend-build:
+    name: Frontend Lint & Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: web/package.json
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Frontend build check
+        run: npm run build
+
+  container-security-scan:
+    name: Container Security & Build Verification
+    runs-on: ubuntu-latest
+    needs: [backend-lint-test, frontend-build]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build API image
+        run: docker build -t inveniq-api:ci -f infra/docker/Dockerfile.api .
+
+      - name: Run Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "inveniq-api:ci"
+          format: "table"
+          exit-code: "0"
+          ignore-unfixed: true
+          severity: "CRITICAL,HIGH"

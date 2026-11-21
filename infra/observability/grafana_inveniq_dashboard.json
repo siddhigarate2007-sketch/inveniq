@@ -1,0 +1,146 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "API & Solver Performance SLAs",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "inveniq-prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "drawStyle": "line", "lineInterpolation": "smooth" },
+          "unit": "s"
+        }
+      },
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 1 },
+      "id": 2,
+      "title": "API Request Latency (p95 < 300ms SLA)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(inveniq_http_request_duration_seconds_bucket[5m])) by (le, path))",
+          "legendFormat": "p95 - {{path}}"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "inveniq-prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "reqps"
+        }
+      },
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 1 },
+      "id": 3,
+      "title": "API Request Throughput by Status",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(inveniq_http_requests_total[1m])) by (status)",
+          "legendFormat": "HTTP {{status}}"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 8 },
+      "id": 4,
+      "title": "Stochastic MILP Optimization & Capital Metrics",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "inveniq-prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 15 },
+              { "color": "red", "value": 30 }
+            ]
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 9 },
+      "id": 5,
+      "title": "HiGHS Solver Execution Time (< 60s Target)",
+      "type": "gauge",
+      "targets": [
+        {
+          "expr": "rate(inveniq_optimization_solve_duration_seconds_sum[5m]) / rate(inveniq_optimization_solve_duration_seconds_count[5m])"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "inveniq-prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "currencyINR"
+        }
+      },
+      "gridPos": { "h": 6, "w": 9, "x": 6, "y": 9 },
+      "id": 6,
+      "title": "Committed Budget & Expected Profit",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "inveniq_budget_allocated_inr",
+          "legendFormat": "Committed Capital (₹)"
+        },
+        {
+          "expr": "inveniq_expected_profit_inr",
+          "legendFormat": "Expected Net Profit (₹)"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "inveniq-prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "orange", "value": 2000000 },
+              { "color": "red", "value": 5000000 }
+            ]
+          },
+          "unit": "currencyINR"
+        }
+      },
+      "gridPos": { "h": 6, "w": 9, "x": 15, "y": 9 },
+      "id": 7,
+      "title": "CVaR (95% Downside Tail Risk)",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "inveniq_cvar_risk_inr"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["inveniq", "tbo", "optimization", "milp"],
+  "time": { "from": "now-6h", "to": "now" },
+  "title": "InvenIQ Production Dashboard",
+  "uid": "inveniq-prod-dashboard",
+  "version": 1
+}

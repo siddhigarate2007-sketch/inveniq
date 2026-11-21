@@ -1,0 +1,31 @@
+{
+  "seed": 42,
+  "start_date": "2023-01-01",
+  "end_date": "2025-12-31",
+  "num_destinations": 20,
+  "num_suppliers": 50,
+  "num_hotels": 47,
+  "num_routes": 20,
+  "ground_truth_effects": {
+    "elasticity": {
+      "Luxury": -0.85,
+      "Midscale": -1.45,
+      "Budget": -2.15
+    },
+    "festivals": {
+      "diwali_lift": 0.85,
+      "new_year_lift": 1.15,
+      "eid_lift": 0.5,
+      "school_vacation_lift": 0.45,
+      "long_weekend_lift": 0.35
+    },
+    "lead_time": {
+      "median_days": 14.0,
+      "decay_rate": 0.08
+    },
+    "sold_out_censoring": {
+      "allotment_utilization_threshold": 0.95,
+      "censoring_probability_in_peaks": 0.3
+    }
+  }
+}

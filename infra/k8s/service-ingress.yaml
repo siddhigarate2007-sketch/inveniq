@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: inveniq-api-service
+  namespace: inveniq
+  labels:
+    app.kubernetes.io/name: inveniq-api
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8000
+      protocol: TCP
+      name: http
+  selector:
+    app: inveniq-api
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: inveniq-ingress
+  namespace: inveniq
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+spec:
+  rules:
+    - host: inveniq.tbo.com
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: inveniq-api-service
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: inveniq-web-service
+                port:
+                  number: 3000

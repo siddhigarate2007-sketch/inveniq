@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "inveniq"
+version = "1.0.0"
+description = "InvenIQ: AI-Powered B2B Travel Inventory Optimization & Risk Engine for TBO.com"
+authors = [{ name = "Principal AI Engineer", email = "architecture@tbo.com" }]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.2.0",
+    "fastapi>=0.111.0",
+    "uvicorn>=0.30.0",
+    "structlog>=24.1.0",
+    "numpy>=1.26.0",
+    "pandas>=2.2.0",
+    "scipy>=1.13.0",
+    "scikit-learn>=1.4.0",
+    "lightgbm>=4.3.0",
+    "pulp>=2.8.0",
+    "duckdb>=0.10.0",
+    "pyyaml>=6.0.1",
+    "requests>=2.31.0",
+]
+
+[tool.setuptools.package-dir]
+"inveniq_core" = "services/core/src/inveniq_core"
+"inveniq_api" = "services/api/src/inveniq_api"
+"inveniq_ml" = "services/ml/src/inveniq_ml"
+"inveniq_optimizer" = "services/optimizer/src/inveniq_optimizer"
+"inveniq_pipelines" = "pipelines/src/inveniq_pipelines"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "hypothesis>=6.100.0",
+    "ruff>=0.4.0",
+    "black>=24.4.0",
+    "mypy>=1.10.0",
+    "httpx>=0.27.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "SIM"]
+ignore = ["E501", "B008"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+ignore_missing_imports = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]

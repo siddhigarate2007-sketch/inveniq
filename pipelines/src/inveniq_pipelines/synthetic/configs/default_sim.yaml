@@ -1,0 +1,53 @@
+simulation:
+  seed: 42
+  start_date: "2023-01-01"
+  end_date: "2025-12-31"
+
+destinations:
+  domestic:
+    - { id: "DEST_GOA", name: "Goa", region: "West India", tier: 2, peak_months: [11, 12, 1, 2], base_demand: 120 }
+    - { id: "DEST_KASHMIR", name: "Kashmir", region: "North India", tier: 2, peak_months: [4, 5, 6, 7], base_demand: 90 }
+    - { id: "DEST_JAIPUR", name: "Jaipur", region: "North India", tier: 2, peak_months: [10, 11, 12, 1, 2], base_demand: 85 }
+    - { id: "DEST_KERALA", name: "Kerala", region: "South India", tier: 2, peak_months: [9, 10, 11, 12, 1], base_demand: 95 }
+    - { id: "DEST_LEH", name: "Leh Ladakh", region: "North India", tier: 3, peak_months: [5, 6, 7, 8], base_demand: 60 }
+    - { id: "DEST_ANDAMAN", name: "Andaman Islands", region: "Island Territories", tier: 2, peak_months: [10, 11, 12, 1, 2, 3], base_demand: 70 }
+    - { id: "DEST_VARANASI", name: "Varanasi", region: "North India", tier: 3, peak_months: [10, 11, 12, 2, 3], base_demand: 65 }
+    - { id: "DEST_UDAIPUR", name: "Udaipur", region: "North India", tier: 2, peak_months: [10, 11, 12, 1, 2], base_demand: 80 }
+    - { id: "DEST_SHIMLA", name: "Shimla", region: "North India", tier: 3, peak_months: [5, 6, 12, 1], base_demand: 75 }
+    - { id: "DEST_DARJEELING", name: "Darjeeling", region: "East India", tier: 3, peak_months: [3, 4, 5, 10, 11], base_demand: 55 }
+  international:
+    - { id: "DEST_DUBAI", name: "Dubai", country: "UAE", region: "Middle East", tier: 1, peak_months: [10, 11, 12, 1, 2, 3], base_demand: 150 }
+    - { id: "DEST_BANGKOK", name: "Bangkok", country: "Thailand", region: "Southeast Asia", tier: 1, peak_months: [11, 12, 1, 2], base_demand: 140 }
+    - { id: "DEST_SINGAPORE", name: "Singapore", country: "Singapore", region: "Southeast Asia", tier: 1, peak_months: [5, 6, 11, 12], base_demand: 130 }
+    - { id: "DEST_BALI", name: "Bali", country: "Indonesia", region: "Southeast Asia", tier: 2, peak_months: [6, 7, 8, 12], base_demand: 110 }
+    - { id: "DEST_PHUKET", name: "Phuket", country: "Thailand", region: "Southeast Asia", tier: 2, peak_months: [11, 12, 1, 2, 3], base_demand: 115 }
+    - { id: "DEST_MALDIVES", name: "Maldives", country: "Maldives", region: "South Asia", tier: 1, peak_months: [11, 12, 1, 2, 3], base_demand: 100 }
+    - { id: "DEST_LONDON", name: "London", country: "United Kingdom", region: "Europe", tier: 1, peak_months: [5, 6, 7, 8], base_demand: 125 }
+    - { id: "DEST_PARIS", name: "Paris", country: "France", region: "Europe", tier: 1, peak_months: [5, 6, 7, 8], base_demand: 120 }
+    - { id: "DEST_TOKYO", name: "Tokyo", country: "Japan", region: "East Asia", tier: 1, peak_months: [3, 4, 10, 11], base_demand: 95 }
+    - { id: "DEST_ISTANBUL", name: "Istanbul", country: "Turkey", region: "Eurasia", tier: 2, peak_months: [4, 5, 9, 10], base_demand: 90 }
+
+suppliers:
+  count: 50
+  categories:
+    - { type: "Direct Hotel Chain", weight: 0.40, avg_margin: 0.22 }
+    - { type: "Bedbank Wholesaler", weight: 0.35, avg_margin: 0.16 }
+    - { type: "Airline Consolidator", weight: 0.25, avg_margin: 0.12 }
+
+ground_truth_effects:
+  elasticity:
+    Luxury: -0.85
+    Midscale: -1.45
+    Budget: -2.15
+  festivals:
+    diwali_lift: 0.85
+    new_year_lift: 1.15
+    eid_lift: 0.50
+    school_vacation_lift: 0.45
+    long_weekend_lift: 0.35
+  lead_time:
+    median_days: 14.0
+    decay_rate: 0.08
+  sold_out_censoring:
+    allotment_utilization_threshold: 0.95
+    censoring_probability_in_peaks: 0.30

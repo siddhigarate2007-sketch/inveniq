@@ -1,0 +1,52 @@
+groups:
+  - name: inveniq_sla_alerts
+    rules:
+      - alert: HighApiLatencyP95
+        expr: histogram_quantile(0.95, rate(inveniq_http_request_duration_seconds_bucket[5m])) > 0.3
+        for: 2m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "InvenIQ API p95 response time exceeds 300ms SLA target"
+          description: "Current p95 response time is {{ $value }}s on endpoint {{ $labels.path }}."
+
+      - alert: OptimizationSolverFailure
+        expr: increase(inveniq_optimization_runs_total{status="FAILED"}[10m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          component: optimizer
+        annotations:
+          summary: "HiGHS MILP optimization solver job failure detected"
+          description: "Optimization run failed for risk appetite {{ $labels.risk_appetite }}."
+
+      - alert: SolverDurationHigh
+        expr: (rate(inveniq_optimization_solve_duration_seconds_sum[10m]) / rate(inveniq_optimization_solve_duration_seconds_count[10m])) > 30
+        for: 5m
+        labels:
+          severity: warning
+          component: optimizer
+        annotations:
+          summary: "Optimization runtime exceeds 30-second target threshold"
+          description: "Average solve duration is {{ $value }}s."
+
+      - alert: ExtremeCVaRTailLoss
+        expr: (inveniq_cvar_risk_inr / inveniq_budget_allocated_inr) > 0.15
+        for: 1m
+        labels:
+          severity: warning
+          component: risk
+        annotations:
+          summary: "Portfolio 95% CVaR tail loss exceeds 15% of committed capital"
+          description: "Current CVaR tail risk is ₹{{ $value | humanize }} INR."
+
+      - alert: FeatureDriftDetected
+        expr: inveniq_feature_drift_psi > 0.25
+        for: 15m
+        labels:
+          severity: warning
+          component: ml
+        annotations:
+          summary: "Population Stability Index (PSI) drift detected in search volume"
+          description: "PSI is {{ $value }} > 0.25 threshold. Trigger retraining pipeline."
